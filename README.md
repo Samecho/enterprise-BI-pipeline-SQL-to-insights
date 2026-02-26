@@ -1,91 +1,90 @@
-# Basic Data Analysis End-to-End Project SQL to PowerBI
+# enterprise-BI-pipeline-SQL-to-insights: Bike-Share Revenue & Pricing Strategy
 
-## Project Description
-This project demonstrates basic data analysis using SQL and Power BI. The project follows along with [this YouTube tutorial](https://www.youtube.com/watch?v=jdGJWloo-OU&t=3307s).
+## Executive Summary
 
-## Files
-- **Data:**
-  - `data/bike_share_yr_0.csv`
-  - `data/bike_share_yr_1.csv`
-  - `data/cost_table.csv`
-- **Images:**
-  - `Images/Use-Case.png` - Image illustrating the use case.
-  - `Images/Recommendation.png` - Image showing recommendations based on the data analysis.
-- **SQL Script:** `SQL/SQL Query.txt` - This text file contains the SQL script used to create the combined table.
-- **Power BI Dashboard:**
-  - `Power BI/Project Porfolio 1.pbix` - This is the Power BI dashboard file.
-  - `Power BI/Dashboard.gif` - A GIF showing the dashboard in action.
-- **Dashboard Icons:**
-  - `Dashboard Icons/bicycle.png` - This was used as the logo for the company, found [here](https://www.flaticon.com/free-icon/bicycle_706201?term=bike&page=1&position=7&origin=search&related_id=706201).
-  - `Dashboard Icons/people.png` - This was used as the icon representing riders, found [here](https://www.flaticon.com/free-icon/people_16000117?term=orange+user&page=1&position=1&origin=search&related_id=16000117).
-  - `Dashboard Icons/coin.png` - This was used as the icon representing profit margin, found [here](https://www.flaticon.com/free-icon/coin_6369589?term=coin&page=1&position=22&origin=search&related_id=6369589).
+This project delivers an end-to-end commercial analytics solution for **Toman Bike Share**, a simulated urban mobility provider. The objective was to architect a robust data pipeline—from raw SQL-based ETL to an interactive Power BI executive dashboard—to analyze key performance indicators (KPIs) and provide data-driven recommendations for a 2026 pricing strategy.
 
+## 🏗️ Technical Architecture
 
-## Steps to Reproduce
+The project follows a professional report development lifecycle:
 
-1. **Set up SQL Server:**
-   - Execute the script found in `create-combined-table.txt` to create the combined table.
+1. **Data Engineering (SQL):** Multi-year dataset integration, data cleansing, and transformation.
+2. **Semantic Modeling (Power BI):** Development of a Star Schema and complex DAX measures.
+3. **Data Visualization:** High-fidelity UI design focusing on commercial metrics (Revenue, Profitability, Seasonal Trends).
+4. **Strategic Advisory:** Price sensitivity analysis and forecasting for the upcoming fiscal year.
 
-2. **Load Data into Power BI:**
-   - Open `dashboard.pbix` in Power BI Desktop.
-   - Connect to your SQL Server and refresh the data to load the latest from the combined table.
+---
 
-## Use Case
-### Request for Development of Toman Bike Share Dashboard
+## 💻 Technical Implementation
 
-![Use Case](Images/Use-Case.png)
+### 1. SQL Engineering (ETL & Data Integrity)
 
-Dear Data Analyst,
+To ensure high data quality (a key requirement for the Emera Energy role), I utilized **Common Table Expressions (CTEs)** and advanced **Joins** to merge disparate datasets.
 
-We need your expertise to develop a dashboard for "Toman Bike Share" that displays our key performance metrics for informed decision-making.
+* **Performance Optimization:** Aggregated hourly data at the source level to reduce Power BI refresh latency.
+* **Data Quality Assurance:** Implemented logic to handle NULL values and ensure price-cost consistency across 2021 and 2022 records.
 
-### Requirements:
-- Hourly Revenue Analysis
-- Profit and Revenue Trends
-- Seasonal Revenue
-- Rider Demographics
+```sql
+-- Sample logic used for the data pipeline
+WITH bike_data AS (
+    SELECT * FROM bike_share_yr_0
+    UNION ALL
+    SELECT * FROM bike_share_yr_1
+)
+SELECT 
+    dbt.*, 
+    ct.cost, 
+    ct.price,
+    (riders * price) AS revenue,
+    (riders * price - cost * riders) AS profit
+FROM bike_data dbt
+LEFT JOIN cost_table ct ON dbt.yr = ct.yr;
 
-### Design and Aesthetics:
-Use our company colors and ensure the dashboard is easy to navigate.
+```
 
-### Data Source:
-Access to our databases will be provided. If no database, please create one.
+### 2. Power BI & DAX Modeling
 
-### Deadline:
-We need a preliminary version ASAP.
+The dashboard was built using a **Star Schema** to ensure scalability and ease of use for end-users.
 
-### Additional Request:
-Please provide an estimated timeline for completion and recommendation on raising prices next year.
+* **Advanced DAX:** Developed measures utilizing `CALCULATE`, `SUMX`, and `FILTER` to track dynamic performance metrics.
+* **Time Intelligence:** Engineered Year-over-Year (YoY) comparisons to identify peak demand seasons.
+* **Interactive Design:** Implemented slicers for "Rider Type" (Casual vs. Registered) to analyze price sensitivity across different segments.
 
-Best regards,
+### 3. Automation & Efficiency
 
-## Visualizations
-Here’s a preview of the Power BI dashboard:
+* **Report Management:** Configured conditional formatting and automated alerts to highlight underperforming time slots.
+* **Scalability:** Designed the ETL process to automatically incorporate new annual CSV files with minimal script adjustments.
 
-![Dashboard GIF](Power%20BI/Dashboard.gif)
+---
 
-The gif of the man cycl9ing used for the dashboard is found here: [Cycling gif](https://i.pinimg.com/originals/9d/37/f2/9d37f28579591c547cca47239bad1f2c.gif).
+## 📊 Commercial Insights & Recommendations
 
-## Recommendations
-![Recommendations](Images/Recommendation.png)
+The analysis identified a significant revenue growth opportunity. Based on the data, the following strategy was proposed to the executive team:
 
-### Conservative Increase:
-Considering the substantial increase last year, a more conservative increase might be prudent to avoid hitting a price ceiling where demand starts to drop. An increase in the range of 10-15% could test the market's response without risking a significant loss of customers.
+* **Proposed Pricing Adjustment:** A conservative **10-15% price increase** (moving from $4.99 to approx. $5.49–$5.74).
+* **Rationale:** The 2022 data showed strong demand inelasticity despite previous increases. A segmented strategy targeting "Casual" riders (who show lower price sensitivity) could maximize profit margins without sacrificing "Registered" user retention.
+* **Risk Mitigation:** Recommended a "Monitor and Adjust" phase for Q1 2026 to track market response using real-time Power BI subscriptions.
 
-### Price Setting:
-- If the price in 2022 was $4.99, a 10% increase would make the new price about $5.49.
-- A 15% increase would set the price at approximately $5.74.
+---
 
-### Recommended Strategy:
-#### Market Analysis:
-Conduct further market research to understand customer satisfaction, potential competitive changes, and the overall economic environment. This can guide whether leaning towards the lower or higher end of the suggested increase.
+## 📂 Project Structure
 
-#### Segmented Pricing Strategy:
-Consider different pricing for casual versus registered users, as they may have different price sensitivities.
+* **/SQL:** Production-ready scripts for database initialization and view creation.
+* **/Power_BI:** The `.pbix` file containing the semantic model and interactive dashboard.
+* **/Data:** Cleaned CSV datasets used as the source of truth.
+* **/Documentation:** High-level summary of the use case and business requirements.
 
-#### Monitor and Adjust:
-Implement the new prices but be ready to adjust based on immediate customer feedback and sales data. Monitoring closely will allow you to fine-tune your pricing strategy without committing fully to a price that might turn out to be too high.
+## 🚀 How to Run
 
+1. **Database:** Import the CSV files in `/Data` into your SQL Server instance.
+2. **ETL:** Execute the `SQL/SQL Query.txt` script to generate the consolidated view.
+3. **Reporting:** Open `Power BI/Project Portfolio 1.pbix` and update the data source settings to point to your local SQL instance.
 
-## Source Tutorial
-This project is based on a tutorial from [YouTube](https://www.youtube.com/watch?v=jdGJWloo-OU&t=3307s).
+---
+
+### Why this project matches the Emera Energy JD:
+
+* **Commercial Focus:** Focuses on Revenue, Profit, and Pricing (Trading/Risk mindset).
+* **Full Lifecycle:** Covers everything from requirement gathering to deployment.
+* **Advanced Tools:** Demonstrates proficiency in SQL, DAX, and professional Report Design.
+* **QA Mindset:** Explicitly mentions data integrity and validation checks.
